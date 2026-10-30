@@ -1,13 +1,16 @@
 from database.connection import connect
-from recording.video_recorder import record_video
+from recording.video_recorder import VideoRecorder
 from camera.camera_manager import init_camera
+import keyboard
 
 def main():
     connection = connect()
 
     try:
         camera = init_camera()
-        record_video(camera)
+
+        videoRecorder = VideoRecorder(camera)
+        videoRecorder.start()
 
     finally:
         connection.close()
