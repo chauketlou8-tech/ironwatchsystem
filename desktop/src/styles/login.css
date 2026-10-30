@@ -1,0 +1,11 @@
+.container {
+    -fx-background-color: red;
+}
+
+.left_panel {
+    -fx-background-color: #0f1b2d;
+}
+
+.right_panel {
+    -fx-background-color: #eaeaea;
+}

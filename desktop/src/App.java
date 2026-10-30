@@ -5,6 +5,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import ui.pages.*;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.Objects;
 
 public class App extends Application {
@@ -47,14 +49,19 @@ public class App extends Application {
     }
 
     private void updateScene() {
-        Parent root = !isLoaded ? this.loaderScreen : (isLoggedIn ? this.homePage : this.loginPage);
+        //Parent root = !isLoaded ? this.loaderScreen : (isLoggedIn ? this.homePage : this.loginPage);
+        Parent root = this.loginPage;
 
         if (this.appScene == null) {
             this.appScene = new Scene(root);
 
-//            this.appScene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style/login.css")).toExternalForm());
-//            this.appScene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/loader.css")).toExternalForm());
-//            this.appScene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/home.css")).toExternalForm());
+            File loginCSS = new File("desktop/src/styles/login.css");
+            File loadCSS = new File("desktop/src/styles/loader.css");
+            File homeCSS = new File("desktop/src/styles/home.css");
+
+            this.appScene.getStylesheets().add(loginCSS.toURI().toString());
+            this.appScene.getStylesheets().add(loadCSS.toURI().toString());
+            this.appScene.getStylesheets().add(homeCSS.toURI().toString());
 
             this.stage.setScene(this.appScene);
         }
