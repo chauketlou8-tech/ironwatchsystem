@@ -1,3 +1,4 @@
+import Repositories.ServerRepository;
 import javafx.application.Application;
 
 import javafx.scene.Parent;
@@ -5,9 +6,10 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import ui.pages.*;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
-import java.nio.file.Path;
-import java.util.Objects;
+import java.io.IOException;
 
 public class App extends Application {
     private boolean isLoggedIn = false;
@@ -20,7 +22,10 @@ public class App extends Application {
     private final LoaderScreen loaderScreen;
     private final HomePage homePage;
 
-    public App() {
+    private int counter = 0;
+
+    public App() throws IOException {
+        new ServerRepository(this::stream);
         this.loginPage = new LoginPage(this::setLoggedIn);
         this.loaderScreen = new LoaderScreen(this::setLoaded);
         this.homePage = new HomePage(this::setLoggedIn);
@@ -55,9 +60,9 @@ public class App extends Application {
         if (this.appScene == null) {
             this.appScene = new Scene(root);
 
-            File loginCSS = new File("desktop/src/styles/login.css");
-            File loadCSS = new File("desktop/src/styles/loader.css");
-            File homeCSS = new File("desktop/src/styles/home.css");
+            File loginCSS = new File("src/styles/login.css");
+            File loadCSS = new File("src/styles/loader.css");
+            File homeCSS = new File("src/styles/home.css");
 
             this.appScene.getStylesheets().add(loginCSS.toURI().toString());
             this.appScene.getStylesheets().add(loadCSS.toURI().toString());
@@ -76,5 +81,20 @@ public class App extends Application {
 
     public void setLoaded(boolean isLoaded) {
         this.isLoaded = isLoaded;
+    }
+
+    public void stream(BufferedImage image) {
+        try {
+            System.out.println(image.getWidth() + "x" + image.getHeight());
+
+            String fileName = "frame" + ++counter + ".png";
+            File imgFile = new File(fileName);
+
+            ImageIO.write(image, "png", imgFile);
+        }
+
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

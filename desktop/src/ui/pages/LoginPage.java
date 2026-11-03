@@ -9,8 +9,7 @@ import java.util.function.Consumer;
 public class LoginPage extends VBox {
     public LoginPage(Consumer<Boolean> setLoggedIn) {
         StackPane root = new StackPane();
-        root.setPrefHeight(Double.MAX_VALUE);
-        root.setMaxHeight(Double.MAX_VALUE);
+        root.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
         HBox container = new HBox();
         container.getStyleClass().add("container");
@@ -68,6 +67,10 @@ public class LoginPage extends VBox {
 
         container.getChildren().addAll(left_panel, right_panel);
         root.getChildren().add(container);
+
+        VBox.setVgrow(root, Priority.ALWAYS);
+
+        setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         getChildren().add(root);
     }
 }
