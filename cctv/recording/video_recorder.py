@@ -2,9 +2,8 @@ import cv2
 from datetime import datetime, date
 
 class VideoRecorder:
-    def __init__(self, camera, camera_capture):
+    def __init__(self, camera):
         self.camera = camera
-        self.capture = camera_capture
 
         self.is_recording = False
         self.writer = None
@@ -17,7 +16,7 @@ class VideoRecorder:
             self.writer = None
         
     def record(self):
-        if not self.camera.isOpened():
+        if not self.camera.is_opened():
             return
         
         print('Recording...')
@@ -27,22 +26,16 @@ class VideoRecorder:
         if self.writer is None:
             today = date.today()
         
-            ret, frame = self.capture.capture_frame()
-            
-            if not ret:
-                return
+            frame = self.camera.capture_frame()
             
             self.height, self.width = frame.shape[:2]
             self.writer = cv2.VideoWriter(f"recording-{today}.avi", cv2.VideoWriter_fourcc(*'MJPG'), 12, (self.width, self.height))
             
             if not self.writer.isOpened():
                 self.writer = None
-                return
+                raise RuntimeError('Error opening video writer')
         
-        ret, frame = self.capture.capture_frame()
-        
-        if not ret:
-            return
+        frame = self.camera.capture_frame()
         
         now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         cv2.putText(frame, now, (20, 36), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)

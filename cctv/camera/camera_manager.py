@@ -1,13 +1,18 @@
 import cv2
+import uuid
+import requests
+import socket
+from .Camera import Camera
+from datetime import datetime
 
 class CameraManager(object):
     def __init__(self):
         self.camera = None
     
     def init_camera(self):
-        self.camera = cv2.VideoCapture(0)
+        self.camera = Camera("TestCamera")
     
-        if self.camera.isOpened():
+        if self.camera.is_opened():
             return self.camera
     
         self.camera.release()
@@ -15,5 +20,5 @@ class CameraManager(object):
 
     def close_camera(self):
         if self.camera is not None:
-            self.camera.release()
+            self.camera.close()
             self.camera = None
