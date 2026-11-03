@@ -1,8 +1,7 @@
 from recording.video_recorder import VideoRecorder
-from streaming.video_streamer import Streamer
-from camera.camera_capture import capture_frame
-from camera.camera_capture import capture_image as capture
-from camera.camera_manager import init_camera
+from streaming.video_streamer import VideoStreamer
+from camera.camera_capture import CameraCapture
+from camera.camera_manager import CameraManager
 from datetime import datetime
 import socket
 import cv2
@@ -19,12 +18,17 @@ class Server:
         conn, addr = self.server.accept()
         print("connected from", addr)
 
-        self.camera = init_camera()
         self.connection = connection
         
-        self.recorder = VideoRecorder(self.camera)
-        self.streamer = Streamer(self.camera, conn)
-
+        self.camera_manager = CameraManager()
+        
+        self.camera = self.camera_manager.init_camera()
+        
+        self.camera_capture = CameraCapture(self.camera)
+        
+        self.recorder = VideoRecorder(self.camera, self.camera_capture)
+        self.streamer = VideoStreamer(self.camera, conn, self.camera_capture)
+    
         while True:
             data = conn.recv(1024)
             data = data.decode()
@@ -37,7 +41,7 @@ class Server:
 
                 case 'start':
                     print("opening camera")
-                    ret, frame = capture_frame(self.camera)
+                    ret, frame = self.camera_capture.capture_frame()
                     
                     conn.send('Camera open\n'.encode())
                     
@@ -48,15 +52,19 @@ class Server:
                     self.recorder.record()
                     
                 case 'capture':
-                    capture(self.camera)
+                    self.camera_capture.capture_image()
                     conn.send('Image captured\n'.encode())
 
-                case 'stop':
+                case 'stop streaming':
                     self.streamer.stop()
+                    
+                case 'stop recording':
+                    self.recorder.stop()
+                    conn.send('recording stopped\n'.encode())
                 
                 case 'close':
-                    self.recorder.close()
-                    self.streamer.close()
+                    self.camera_manager.close_camera()
+                    conn.send("closed\n".encode())
                     break
                     
         self.server.close()

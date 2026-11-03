@@ -1,6 +1,5 @@
 from database.connection import connect
 from recording.video_recorder import VideoRecorder
-from camera.camera_manager import init_camera
 from sockets.server import Server
 import keyboard
 

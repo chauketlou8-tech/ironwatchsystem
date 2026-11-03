@@ -54,6 +54,18 @@ public class Client {
                     continue;
                 }
 
+                if(msg.equals("recording stopped")) {
+                    this.out.write("stop streaming");
+                    this.out.flush();
+
+                    int size = in.readInt();
+                    byte[] data = in.readNBytes(size);
+
+                    BufferedImage image = ImageIO.read(new ByteArrayInputStream(data));
+                    stream.accept(image);
+                    continue;
+                }
+
                 if(msg.equals("closed")) {
                     System.exit(0);
                 }
@@ -71,14 +83,8 @@ public class Client {
                     counter++;
 
                     if (counter == 10) {
-                        this.out.write("stop");
+                        this.out.write("stop recording");
                         this.out.flush();
-
-                        size = in.readInt();
-                        data = in.readNBytes(size);
-
-                        image = ImageIO.read(new ByteArrayInputStream(data));
-                        stream.accept(image);
 
                         connected = false;
                     }
