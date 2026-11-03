@@ -12,7 +12,7 @@ public class Client {
     private final OutputStreamWriter out;
     private final Socket client;
 
-    private boolean recording = false;
+    private boolean connected = false;
     private int counter = 0;
 
     public Client(Consumer<BufferedImage> stream) throws IOException {
@@ -39,7 +39,7 @@ public class Client {
                 }
 
                 if(msg.equals("Camera open")) {
-                    recording = true;
+                    connected = true;
                 }
 
                 if(msg.equals("Camera stopped")) {
@@ -55,11 +55,11 @@ public class Client {
                 }
 
                 if(msg.equals("closed")) {
-                    break;
+                    System.exit(0);
                 }
 
-                while (recording) {
-                    this.out.write("record");
+                while (connected) {
+                    this.out.write("stream");
                     this.out.flush();
 
                     int size = in.readInt();
@@ -80,7 +80,7 @@ public class Client {
                         image = ImageIO.read(new ByteArrayInputStream(data));
                         stream.accept(image);
 
-                        recording = false;
+                        connected = false;
                     }
                 }
             }
