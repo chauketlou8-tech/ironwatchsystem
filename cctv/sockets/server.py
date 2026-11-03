@@ -19,7 +19,7 @@ class Server:
 
         self.connection = connection
         
-        self.camera_manager = CameraManager()
+        self.camera_manager = CameraManager(self.connection)
         self.camera = self.camera_manager.init_camera()
 
         self.recorder = VideoRecorder(self.camera)
