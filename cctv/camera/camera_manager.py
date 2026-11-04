@@ -15,10 +15,9 @@ class CameraManager(object):
         self.camera = Camera("TestCamera")
     
         if self.camera.is_opened():
-            self.cur.execute("select id from cameras where camera_id = %s", (self.camera.id,))
+            self.cur.execute("select camera_id, camera_name, camera_type, location, ip_address, version, status, installation_date from cameras where camera_name = %s", (self.camera.name,))
             
             exists_camera = self.cur.fetchone()
-            print(exists_camera)
             
             if not exists_camera:
                 self.cur.execute("insert into cameras(camera_id, camera_name, camera_type, location, ip_address, version, status) values (%s, %s, %s, %s, %s, %s, %s)",
@@ -27,6 +26,17 @@ class CameraManager(object):
                 self.connection.commit()
 
                 return self.camera
+            
+            self.camera.id = exists_camera[0]
+            self.camera.name = exists_camera[1]
+            self.camera.type = exists_camera[2]
+            self.camera.location = exists_camera[3]
+            self.camera.ip = exists_camera[4]
+            self.camera.version = exists_camera[5]
+            self.camera.status = exists_camera[6]
+            self.camera.installation_date = exists_camera[7]
+            
+            return self.camera
     
         self.camera.release()
         raise RuntimeError("Could not initialize camera.")
