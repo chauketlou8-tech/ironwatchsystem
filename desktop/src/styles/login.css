@@ -7,5 +7,45 @@
 }
 
 .right_panel {
-    -fx-background-color: #eaeaea;
+    -fx-background-color: #e6e6e6;
+    -fx-alignment: center
+}
+
+.form {
+    -fx-background-color: #ffffff;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-pref-height: 200;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0, 0, 2);
+}
+
+.welcome_label {
+    -fx-text-fill: #000000;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
+
+.sign_label {
+    -fx-text-fill: #333;
+    -fx-font-size: 12px;
+}
+
+.email_label, .password_label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #666;
+    -fx-font-weight: 600;
+}
+
+.checkbox, .forgot_label {
+    -fx-cursor: hand;
+}
+
+.forgot_label {
+    -fx-text-fill: #a36200;
+}
+
+.button {
+    -fx-cursor: hand;
+    -fx-background-color: orange;
+    -fx-text-fill: #fff;
 }

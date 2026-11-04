@@ -25,7 +25,7 @@ public class App extends Application {
     private int counter = 0;
 
     public App() throws IOException {
-        new ServerRepository(this::stream);
+        //new ServerRepository(this::stream);
         this.loginPage = new LoginPage(this::setLoggedIn);
         this.loaderScreen = new LoaderScreen(this::setLoaded);
         this.homePage = new HomePage(this::setLoggedIn);
