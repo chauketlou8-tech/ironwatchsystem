@@ -4,6 +4,21 @@
 
 .left_panel {
     -fx-background-color: #0f1b2d;
+    -fx-alignment: center;
+    -fx-background-image: url("../../resources/assets/tile.png");
+    -fx-background-repeat: repeat;
+    -fx-background-size: 40px 40px;
+}
+
+.iron_label {
+    -fx-font-size: 40px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #fff;
+}
+
+.desc_label {
+    -fx-font-size: 18px;
+    -fx-text-fill: #999;
 }
 
 .right_panel {

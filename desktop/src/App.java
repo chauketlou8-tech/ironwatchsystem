@@ -26,7 +26,7 @@ public class App extends Application {
 
     public App() throws IOException {
         //new ServerRepository(this::stream);
-        this.loginPage = new LoginPage(this::setLoggedIn);
+        this.loginPage = new LoginPage(this::setLoggedIn, this::setScene);
         this.loaderScreen = new LoaderScreen(this::setLoaded);
         this.homePage = new HomePage(this::setLoggedIn);
     }
@@ -73,6 +73,12 @@ public class App extends Application {
         else {
             this.appScene.setRoot(root);
         }
+    }
+
+    public void setScene(Parent root) {
+        if (root == null) return;
+
+        this.appScene.setRoot(root);
     }
 
     public void setLoggedIn(boolean isLoggedIn) {

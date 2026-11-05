@@ -1,6 +1,8 @@
 package ui.pages;
 
+import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
@@ -13,10 +15,12 @@ public class LoginPage extends VBox {
     private final PasswordField password_field;
 
     private Consumer<Boolean> setLoggedIn;
+    private Consumer<Parent> setScene;
 
-    public LoginPage(Consumer<Boolean> setLoggedIn) {
+    public LoginPage(Consumer<Boolean> setLoggedIn,  Consumer<Parent> setScene) {
         this();
         this.setLoggedIn = setLoggedIn;
+        this.setScene = setScene;
     }
     private LoginPage() {
         StackPane root = new StackPane();
@@ -52,8 +56,11 @@ public class LoginPage extends VBox {
         right_panel.setMaxSize(700,  Double.MAX_VALUE);
         right_panel.setPadding(new Insets(80, 150, 80, 150));
 
-        Label iron_label = new Label("IRONWATCH");
+        Label iron_label = new Label("I R O N W A T C H");
+        iron_label.getStyleClass().add("iron_label");
+
         Label desc_label = new Label("Protecting what matters.");
+        desc_label.getStyleClass().add("desc_label");
 
         VBox form = new VBox();
         form.getStyleClass().add("form");
@@ -101,16 +108,22 @@ public class LoginPage extends VBox {
 
         HBox remember_box = new HBox();
 
-        CheckBox checkbox = new CheckBox("Remember me");
-        checkbox.getStyleClass().add("checkbox");
-
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         Label forgot_label = new Label("Forgot Password?");
         forgot_label.getStyleClass().add("forgot_label");
+        forgot_label.setOnMouseClicked(_ -> this.forgot_password());
 
-        remember_box.getChildren().addAll(checkbox, spacer, forgot_label);
+        remember_box.getChildren().addAll(spacer, forgot_label);
+
+        HBox warning_box = new HBox();
+        warning_box.getStyleClass().add("warning_box");
+
+        Label warning_label = new Label("Shared company workstation. Your session remains active until you sign out or the terminal locks automatically.");
+        warning_label.getStyleClass().add("warning_label");
+
+        warning_box.getChildren().addAll(warning_label);
 
         this.sign_in_button= new Button("Sign in");
         this.sign_in_button.getStyleClass().add("button");
@@ -120,7 +133,7 @@ public class LoginPage extends VBox {
 
         this.sign_in_button.setOnAction(_ -> this.signin());
 
-        form.getChildren().addAll(label_box, input_box, remember_box, this.sign_in_button);
+        form.getChildren().addAll(label_box, input_box, remember_box, warning_box, this.sign_in_button);
         form.setSpacing(20);
 
         left_panel.getChildren().addAll(iron_label, desc_label);
@@ -142,38 +155,42 @@ public class LoginPage extends VBox {
         this.sign_in_button.setDisable(true);
         this.sign_in_button.setText("signing in");
 
-        String[] credentials = this.getCredentials();
-        String email  = credentials[0];
-        String password = credentials[1];
+        new Thread(() -> {
+            String[] credentials = this.getCredentials();
+            String email  = credentials[0];
+            String password = credentials[1];
 
-        if (email.isEmpty() || password.isEmpty()){
-            this.reset();
-            return;
-        }
+            if (email.isEmpty() || password.isEmpty()){
+                Platform.runLater(this::reset);
+                return;
+            }
 
-        if (!email.endsWith("@ironwatch.co.za")) {
-            this.reset();
-            return;
-        }
+            if (!email.endsWith("@ironwatch.co.za")) {
+                Platform.runLater(this::reset);
+                return;
+            }
 
-        long delta_time = System.currentTimeMillis() - start;
+            long delta_time = System.currentTimeMillis() - start;
 
-        if (delta_time > min_loading) {
-            this.reset();
-            return;
-        }
+            if (delta_time > min_loading) {
+                Platform.runLater(this::reset);
+                return;
+            }
 
-        else {
-            while(true) {
-                long rn =  System.currentTimeMillis();
-                if (rn - start >= min_loading) {
-                    break;
+            else {
+                while(true) {
+                    long rn =  System.currentTimeMillis();
+                    if (rn - start >= min_loading) {
+                        break;
+                    }
                 }
             }
-        }
 
-        this.reset();
-        this.setLoggedIn.accept(true);
+            Platform.runLater(() -> {
+                this.reset();
+                this.setLoggedIn.accept(true);
+            });
+        }).start();
     }
 
     private String[] getCredentials() {
@@ -189,5 +206,10 @@ public class LoginPage extends VBox {
 
         this.email_field.clear();
         this.password_field.clear();
+    }
+
+    private void forgot_password() {
+        ForgotPasswordPage forgotPasswordPage = new  ForgotPasswordPage();
+        this.setScene.accept(forgotPasswordPage);
     }
 }
