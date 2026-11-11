@@ -1,4 +1,4 @@
-package ui.pages;
+package ui.pages.authPages;
 
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -16,11 +16,13 @@ public class LoginPage extends VBox {
 
     private Consumer<Boolean> setLoggedIn;
     private Consumer<Parent> setScene;
+    private Runnable updateScene;
 
-    public LoginPage(Consumer<Boolean> setLoggedIn,  Consumer<Parent> setScene) {
+    public LoginPage(Consumer<Boolean> setLoggedIn,  Consumer<Parent> setScene,  Runnable updateScene) {
         this();
         this.setLoggedIn = setLoggedIn;
         this.setScene = setScene;
+        this.updateScene = updateScene;
     }
     private LoginPage() {
         StackPane root = new StackPane();
@@ -174,6 +176,8 @@ public class LoginPage extends VBox {
 
             if (delta_time > min_loading) {
                 Platform.runLater(this::reset);
+                this.setLoggedIn.accept(true);
+                this.updateScene.run();
                 return;
             }
 
@@ -189,6 +193,7 @@ public class LoginPage extends VBox {
             Platform.runLater(() -> {
                 this.reset();
                 this.setLoggedIn.accept(true);
+                this.updateScene.run();
             });
         }).start();
     }

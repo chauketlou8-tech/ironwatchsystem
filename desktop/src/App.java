@@ -1,10 +1,11 @@
-import Repositories.ServerRepository;
 import javafx.application.Application;
 
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import ui.pages.*;
+import ui.pages.loader.LoaderScreen;
+import ui.pages.authPages.LoginPage;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -13,7 +14,7 @@ import java.io.IOException;
 
 public class App extends Application {
     private boolean isLoggedIn = false;
-    private boolean isLoaded = false;
+    private boolean isLoaded = true;
 
     private Stage stage;
     private Scene appScene;
@@ -26,9 +27,9 @@ public class App extends Application {
 
     public App() throws IOException {
         //new ServerRepository(this::stream);
-        this.loginPage = new LoginPage(this::setLoggedIn, this::setScene);
-        this.loaderScreen = new LoaderScreen(this::setLoaded);
-        this.homePage = new HomePage(this::setLoggedIn);
+        this.loginPage = new LoginPage(this::setLoggedIn, this::setScene, this::updateScene);
+        this.loaderScreen = new LoaderScreen(this::setLoaded, this::updateScene);
+        this.homePage = new HomePage(this::setLoggedIn, this::updateScene);
     }
 
     @Override
@@ -53,9 +54,9 @@ public class App extends Application {
         launch(args);
     }
 
-    private void updateScene() {
-        //Parent root = !isLoaded ? this.loaderScreen : (isLoggedIn ? this.homePage : this.loginPage);
-        Parent root = this.loginPage;
+    public void updateScene() {
+        Parent root = !isLoaded ? this.loaderScreen : (isLoggedIn ? this.homePage : this.loginPage);
+        //Parent root = this.loginPage;
 
         if (this.appScene == null) {
             this.appScene = new Scene(root);

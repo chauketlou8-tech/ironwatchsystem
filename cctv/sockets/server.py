@@ -1,9 +1,7 @@
 from recording.video_recorder import VideoRecorder
 from streaming.video_streamer import VideoStreamer
 from camera.camera_manager import CameraManager
-from datetime import datetime
 import socket
-import cv2
 import sys
 
 class Server:

@@ -1,4 +1,4 @@
-package ui.pages;
+package ui.pages.authPages;
 
 import javafx.scene.layout.*;
 

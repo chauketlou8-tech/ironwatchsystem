@@ -1,9 +1,4 @@
-import cv2
-import uuid
-import requests
-import socket
 from .Camera import Camera
-from datetime import datetime
 
 class CameraManager(object):
     def __init__(self, connection):
@@ -27,6 +22,7 @@ class CameraManager(object):
 
                 return self.camera
             
+            print("camera already initialized skipping...")
             self.camera.id = exists_camera[0]
             self.camera.name = exists_camera[1]
             self.camera.type = exists_camera[2]
