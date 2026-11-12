@@ -1,11 +1,18 @@
 package ui.pages.authPages;
 
+import Models.User;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.util.Duration;
+import org.mindrot.jbcrypt.BCrypt;
 
+import java.nio.charset.StandardCharsets;
+import java.util.HexFormat;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class LoginPage extends VBox {
@@ -14,15 +21,24 @@ public class LoginPage extends VBox {
     private final TextField email_field;
     private final PasswordField password_field;
 
-    private Consumer<Boolean> setLoggedIn;
+    private final Label email_error;
+    private final Label password_error;
+
+    private List<User> users;
+
+    private Consumer<Boolean> setPassEntered;
     private Consumer<Parent> setScene;
+    private Consumer<User> setCurrentUser;
+
     private Runnable updateScene;
 
-    public LoginPage(Consumer<Boolean> setLoggedIn,  Consumer<Parent> setScene,  Runnable updateScene) {
+    public LoginPage(List<User> users, Consumer<Boolean> setPassEntered,  Consumer<Parent> setScene, Consumer<User> setCurrentUser,  Runnable updateScene) {
         this();
-        this.setLoggedIn = setLoggedIn;
+        this.users = users;
+        this.setPassEntered = setPassEntered;
         this.setScene = setScene;
         this.updateScene = updateScene;
+        this.setCurrentUser = setCurrentUser;
     }
     private LoginPage() {
         StackPane root = new StackPane();
@@ -99,14 +115,19 @@ public class LoginPage extends VBox {
 
         this.email_field.setPromptText("johnmarguire@ironwatch.co.za");
 
-        email_box.getChildren().addAll(email_label, this.email_field);
-        password_box.getChildren().addAll(password_label, this.password_field);
+        this.email_error = new Label();
+        this.email_error.setPrefHeight(0);
+
+        this.password_error = new Label();
+        this.password_error.setPrefHeight(0);
+
+        email_box.getChildren().addAll(email_label, this.email_field, email_error);
+        password_box.getChildren().addAll(password_label, this.password_field, password_error);
 
         password_box.setSpacing(5);
         email_box.setSpacing(5);
 
         input_box.getChildren().addAll(email_box, password_box);
-        input_box.setSpacing(10);
 
         HBox remember_box = new HBox();
 
@@ -135,7 +156,10 @@ public class LoginPage extends VBox {
 
         this.sign_in_button.setOnAction(_ -> this.signin());
 
-        form.getChildren().addAll(label_box, input_box, remember_box, warning_box, this.sign_in_button);
+        VBox input_rem = new VBox();
+        input_rem.getChildren().addAll(input_box, remember_box);
+
+        form.getChildren().addAll(label_box, input_rem, warning_box, this.sign_in_button);
         form.setSpacing(20);
 
         left_panel.getChildren().addAll(iron_label, desc_label);
@@ -151,6 +175,7 @@ public class LoginPage extends VBox {
     }
 
     private void signin() {
+        this.clear_errors();
         long start =  System.currentTimeMillis();
         int min_loading = 3500;
 
@@ -158,49 +183,39 @@ public class LoginPage extends VBox {
         this.sign_in_button.setText("signing in");
 
         new Thread(() -> {
-            String[] credentials = this.getCredentials();
-            String email  = credentials[0];
-            String password = credentials[1];
+            boolean isValid = this.authenticate();
 
-            if (email.isEmpty() || password.isEmpty()){
-                Platform.runLater(this::reset);
+            if (!isValid) {
                 return;
             }
 
-            if (!email.endsWith("@ironwatch.co.za")) {
-                Platform.runLater(this::reset);
-                return;
-            }
-
+            //time passed from the start
             long delta_time = System.currentTimeMillis() - start;
 
             if (delta_time > min_loading) {
                 Platform.runLater(this::reset);
-                this.setLoggedIn.accept(true);
+                this.setPassEntered.accept(true);
                 this.updateScene.run();
                 return;
             }
 
-            else {
-                while(true) {
-                    long rn =  System.currentTimeMillis();
-                    if (rn - start >= min_loading) {
-                        break;
-                    }
-                }
+            try {
+                Thread.sleep(min_loading - delta_time);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
 
             Platform.runLater(() -> {
                 this.reset();
-                this.setLoggedIn.accept(true);
+                this.setPassEntered.accept(true);
                 this.updateScene.run();
             });
         }).start();
     }
 
     private String[] getCredentials() {
-        String email = this.email_field.getText();
-        String password = this.password_field.getText();
+        String email = this.email_field.getText().trim();
+        String password = this.password_field.getText().trim();
 
         return new String[]{email, password};
     }
@@ -216,5 +231,64 @@ public class LoginPage extends VBox {
     private void forgot_password() {
         ForgotPasswordPage forgotPasswordPage = new  ForgotPasswordPage();
         this.setScene.accept(forgotPasswordPage);
+    }
+
+    private void clear_errors() {
+        this.email_error.setText("");
+        this.password_error.setText("");
+    }
+
+    private boolean authenticate() {
+        String[] credentials = this.getCredentials();
+        String email  = credentials[0];
+        String password = credentials[1];
+
+        if (email.isBlank()){
+            return this.fail(this.email_error, "Please enter your email.");
+        }
+
+        if (password.isBlank()){
+            return this.fail(this.password_error, "Please enter your password.");
+        }
+
+        if (!email.endsWith("@ironwatch.co.za")) {
+            return fail(this.email_error, "Please enter a valid email.");
+        }
+
+        User foundUser = this.users.stream().filter(u -> u.email().equalsIgnoreCase(email)).findFirst().orElse(null);
+
+        if (foundUser == null) {
+            return fail(this.email_error, "Invalid email.");
+        }
+
+        String hashed_password = foundUser.password().substring(2);
+        byte[] hashed_password_bytes = HexFormat.of().parseHex(hashed_password);
+        String hash = new String(hashed_password_bytes, StandardCharsets.UTF_8);
+
+        if (hash.startsWith("$2b$")) {
+            hash = "$2a$" + hash.substring(4);
+        }
+
+        boolean match = BCrypt.checkpw(password, hash);
+
+        if (!match) {
+            return this.fail(this.password_error, "Wrong password.");
+        }
+
+        this.setCurrentUser.accept(foundUser);
+        return true;
+    }
+
+    private boolean fail(Label label, String message) {
+        PauseTransition pause = new PauseTransition(Duration.seconds(3));
+        pause.setOnFinished(_ -> this.clear_errors());
+
+        Platform.runLater(() -> {
+            label.setText(message);
+            pause.play();
+            this.reset();
+        });
+
+        return false;
     }
 }

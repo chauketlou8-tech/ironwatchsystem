@@ -1,9 +1,12 @@
+import Models.User;
+import Repositories.ServerRepository;
 import javafx.application.Application;
 
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import ui.pages.*;
+import ui.pages.authPages.OTPScreen;
 import ui.pages.loader.LoaderScreen;
 import ui.pages.authPages.LoginPage;
 
@@ -11,9 +14,12 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
 
 public class App extends Application {
     private boolean isLoggedIn = false;
+    private boolean passEntered = false;
     private boolean isLoaded = true;
 
     private Stage stage;
@@ -22,14 +28,19 @@ public class App extends Application {
     private final LoginPage loginPage;
     private final LoaderScreen loaderScreen;
     private final HomePage homePage;
+    private final OTPScreen otpScreen;
+
+    private User currentUser;
 
     private int counter = 0;
 
-    public App() throws IOException {
-        //new ServerRepository(this::stream);
-        this.loginPage = new LoginPage(this::setLoggedIn, this::setScene, this::updateScene);
+    public App() throws IOException, SQLException {
+        List<User> users = ServerRepository.getUsers();
+
+        this.loginPage = new LoginPage(users, this::setPassEntered, this::setScene, this::setCurrentUser, this::updateScene);
         this.loaderScreen = new LoaderScreen(this::setLoaded, this::updateScene);
-        this.homePage = new HomePage(this::setLoggedIn, this::updateScene);
+        this.homePage = new HomePage(this::setLoggedIn, this::setCurrentUser, this::updateScene, this.currentUser);
+        this.otpScreen = new OTPScreen(this::setLoggedIn, this::updateScene, this::setCurrentUser);
     }
 
     @Override
@@ -55,7 +66,7 @@ public class App extends Application {
     }
 
     public void updateScene() {
-        Parent root = !isLoaded ? this.loaderScreen : (isLoggedIn ? this.homePage : this.loginPage);
+        Parent root = !isLoaded ? this.loaderScreen : (isLoggedIn ? this.homePage : (passEntered ? this.otpScreen : this.loginPage));
         //Parent root = this.loginPage;
 
         if (this.appScene == null) {
@@ -88,6 +99,14 @@ public class App extends Application {
 
     public void setLoaded(boolean isLoaded) {
         this.isLoaded = isLoaded;
+    }
+
+    public void setPassEntered(boolean passEntered) {
+        this.passEntered = passEntered;
+    }
+
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
     }
 
     public void stream(BufferedImage image) {

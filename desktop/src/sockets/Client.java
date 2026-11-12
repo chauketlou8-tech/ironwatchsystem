@@ -24,7 +24,7 @@ public class Client {
 
         System.out.println("Connecting to the server...");
 
-        this.out.write("Open Connection");
+        this.out.write("Open Conn");
         this.out.flush();
 
         while (true) {
