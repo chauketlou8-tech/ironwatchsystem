@@ -17,7 +17,7 @@ def sort(employees):
 		lastname = employee["lastname"]
 		email = "".join(lastname.lower().split(" ") + first_name.lower().split(" ")) + "@ironwatch.co.za"
 		
-		gender = employee["gender"]
+		gender = employee["gender"].upper()
 		phone = employee["phone"]
 		dob = str(datetime.strptime(employee["dob"], "%Y-%m-%d").date())
 		department = employee["department"]
