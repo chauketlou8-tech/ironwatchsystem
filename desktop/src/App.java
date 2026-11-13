@@ -1,5 +1,5 @@
+import Models.Employee;
 import Models.User;
-import Repositories.ServerRepository;
 import javafx.application.Application;
 
 import javafx.scene.Parent;
@@ -15,12 +15,13 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class App extends Application {
     private boolean isLoggedIn = false;
     private boolean passEntered = false;
-    private boolean isLoaded = true;
+    private boolean isLoaded = false;
 
     private Stage stage;
     private Scene appScene;
@@ -32,13 +33,14 @@ public class App extends Application {
 
     private User currentUser;
 
+    private final List<User> users = new ArrayList<>();
+    private final List<Employee> employees = new ArrayList<>();
+
     private int counter = 0;
 
-    public App() throws IOException, SQLException {
-        List<User> users = ServerRepository.getUsers();
-
-        this.loginPage = new LoginPage(users, this::setPassEntered, this::setScene, this::setCurrentUser, this::updateScene);
-        this.loaderScreen = new LoaderScreen(this::setLoaded, this::updateScene);
+    public App() {
+        this.loaderScreen = new LoaderScreen(this::setLoaded, this::setUsers, this::setEmployees, this::updateScene);
+        this.loginPage = new LoginPage(this.users, this::setPassEntered, this::setScene, this::setCurrentUser, this::updateScene);
         this.homePage = new HomePage(this::setLoggedIn, this::setCurrentUser, this::updateScene, this.currentUser);
         this.otpScreen = new OTPScreen(this::setLoggedIn, this::updateScene, this::setCurrentUser);
     }
@@ -66,9 +68,11 @@ public class App extends Application {
     }
 
     public void updateScene() {
-        Parent root = !isLoaded ? this.loaderScreen : (isLoggedIn ? this.homePage : (passEntered ? this.otpScreen : this.loginPage));
-        //Parent root = this.loginPage;
+        if (this.stage == null) {
+            return;
+        }
 
+        Parent root = !isLoaded ? this.loaderScreen : (isLoggedIn ? this.homePage : (passEntered ? this.otpScreen : this.loginPage));
         if (this.appScene == null) {
             this.appScene = new Scene(root);
 
@@ -82,6 +86,7 @@ public class App extends Application {
 
             this.stage.setScene(this.appScene);
         }
+
         else {
             this.appScene.setRoot(root);
         }
@@ -107,6 +112,18 @@ public class App extends Application {
 
     public void setCurrentUser(User user) {
         this.currentUser = user;
+    }
+
+    public void setUsers(List<User> users) {
+        if (users == null) return;
+
+        this.users.addAll(users);
+    }
+
+    public void setEmployees(List<Employee> employees) {
+        if  (employees == null) return;
+
+        this.employees.addAll(employees);
     }
 
     public void stream(BufferedImage image) {

@@ -116,10 +116,10 @@ public class LoginPage extends VBox {
         this.email_field.setPromptText("johnmarguire@ironwatch.co.za");
 
         this.email_error = new Label();
-        this.email_error.setPrefHeight(0);
+        this.email_error.getStyleClass().add("email_error");
 
         this.password_error = new Label();
-        this.password_error.setPrefHeight(0);
+        this.password_error.getStyleClass().add("password_error");
 
         email_box.getChildren().addAll(email_label, this.email_field, email_error);
         password_box.getChildren().addAll(password_label, this.password_field, password_error);
@@ -255,7 +255,7 @@ public class LoginPage extends VBox {
             return fail(this.email_error, "Please enter a valid email.");
         }
 
-        User foundUser = this.users.stream().filter(u -> u.email().equalsIgnoreCase(email)).findFirst().orElse(null);
+        User foundUser = this.users != null ? this.users.stream().filter(u -> u.email().equalsIgnoreCase(email)).findFirst().orElse(null) : null;
 
         if (foundUser == null) {
             return fail(this.email_error, "Invalid email.");

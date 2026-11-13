@@ -1,0 +1,76 @@
+.loader-screen {
+    -fx-background-color: linear-gradient(to bottom, #0f1b2d, #0a1320);
+}
+
+.brand-title {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(255, 138, 31, 0.45), 18, 0.3, 0, 0);
+}
+
+.brand-subtitle {
+    -fx-text-fill: rgba(255, 255, 255, 0.45);
+    -fx-font-size: 13px;
+}
+
+.progress-container {
+    -fx-background-color: rgba(255, 255, 255, 0.06);
+    -fx-background-radius: 4;
+    -fx-min-height: 8px;
+    -fx-pref-height: 8px;
+    -fx-max-height: 8px;
+}
+
+.progress-bar {
+    -fx-background-color: linear-gradient(to right, #ff8a1f, #ffb347);
+    -fx-background-radius: 4;
+    -fx-min-height: 8px;
+    -fx-pref-height: 8px;
+    -fx-max-height: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(255, 138, 31, 0.55), 12, 0.2, 0, 0);
+}
+
+.progress-shimmer {
+    -fx-fill: linear-gradient(to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.55) 50%,
+        rgba(255, 255, 255, 0) 100%);
+}
+
+.task-list {
+    -fx-padding: 16 0 0 0;
+}
+
+.task-line {
+    -fx-padding: 8 12;
+    -fx-background-radius: 6;
+}
+
+.task-label {
+    -fx-text-fill: rgba(255, 255, 255, 0.4);
+    -fx-font-size: 13px;
+}
+
+.task-line.task-current .task-label {
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+}
+
+.task-line.task-done .task-label {
+    -fx-text-fill: rgba(255, 255, 255, 0.65);
+}
+
+.task-status {
+    -fx-alignment: center-left;
+}
+
+.task-spinner {
+    -fx-progress-color: #ffb347;
+}
+
+.task-tick {
+    -fx-text-fill: #4caf50;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
