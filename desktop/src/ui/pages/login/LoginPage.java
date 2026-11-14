@@ -1,10 +1,10 @@
-package ui.pages.authPages;
+package ui.pages.login;
 
 import Models.User;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
-import javafx.scene.Parent;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.util.Duration;
@@ -16,31 +16,33 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class LoginPage extends VBox {
-    private final Button sign_in_button;
+    private Button sign_in_button;
 
-    private final TextField email_field;
-    private final PasswordField password_field;
+    private TextField email_field;
+    private PasswordField password_field;
 
-    private final Label email_error;
-    private final Label password_error;
+    private Label email_error;
+    private Label password_error;
 
     private List<User> users;
 
-    private Consumer<Boolean> setPassEntered;
-    private Consumer<Parent> setScene;
     private Consumer<User> setCurrentUser;
+    private Consumer<Boolean> setLoggedIn;
 
     private Runnable updateScene;
 
-    public LoginPage(List<User> users, Consumer<Boolean> setPassEntered,  Consumer<Parent> setScene, Consumer<User> setCurrentUser,  Runnable updateScene) {
+    public LoginPage(List<User> users, Consumer<User> setCurrentUser, Consumer<Boolean> setLoggedIn,  Runnable updateScene) {
         this();
         this.users = users;
-        this.setPassEntered = setPassEntered;
-        this.setScene = setScene;
         this.updateScene = updateScene;
         this.setCurrentUser = setCurrentUser;
+        this.setLoggedIn = setLoggedIn;
     }
     private LoginPage() {
+        this.initUI();
+    }
+
+    private void initUI() {
         StackPane root = new StackPane();
         root.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
@@ -52,26 +54,20 @@ public class LoginPage extends VBox {
 
         VBox left_panel = new VBox();
         left_panel.getStyleClass().add("left_panel");
-
         left_panel.setSpacing(10);
         left_panel.setPadding(new Insets(10));
         left_panel.setMaxHeight(Double.MAX_VALUE);
-
         HBox.setHgrow(left_panel, Priority.ALWAYS);
         VBox.setVgrow(left_panel, Priority.ALWAYS);
-
         left_panel.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
         VBox right_panel = new VBox();
         right_panel.getStyleClass().add("right_panel");
-
         right_panel.setSpacing(10);
         right_panel.setPadding(new Insets(10));
-
         HBox.setHgrow(right_panel, Priority.ALWAYS);
         VBox.setVgrow(right_panel, Priority.ALWAYS);
-
-        right_panel.setMaxSize(700,  Double.MAX_VALUE);
+        right_panel.setMaxSize(700, Double.MAX_VALUE);
         right_panel.setPadding(new Insets(80, 150, 80, 150));
 
         Label iron_label = new Label("I R O N W A T C H");
@@ -82,12 +78,10 @@ public class LoginPage extends VBox {
 
         VBox form = new VBox();
         form.getStyleClass().add("form");
-
-        form.setSpacing(10);
+        form.setSpacing(30);
         form.setPadding(new Insets(30));
 
-        VBox label_box = new VBox();
-
+        VBox label_box = new VBox(6);
         Label welcome_label = new Label("Welcome back");
         welcome_label.getStyleClass().add("welcome_label");
 
@@ -97,9 +91,8 @@ public class LoginPage extends VBox {
         label_box.getChildren().addAll(welcome_label, sign_label);
 
         VBox input_box = new VBox();
-
-        VBox email_box = new VBox();
-        VBox password_box = new VBox();
+        VBox email_box = new VBox(5);
+        VBox password_box = new VBox(5);
 
         Label email_label = new Label("Email address");
         Label password_label = new Label("Password");
@@ -124,43 +117,31 @@ public class LoginPage extends VBox {
         email_box.getChildren().addAll(email_label, this.email_field, email_error);
         password_box.getChildren().addAll(password_label, this.password_field, password_error);
 
-        password_box.setSpacing(5);
-        email_box.setSpacing(5);
-
         input_box.getChildren().addAll(email_box, password_box);
-
-        HBox remember_box = new HBox();
-
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-
-        Label forgot_label = new Label("Forgot Password?");
-        forgot_label.getStyleClass().add("forgot_label");
-        forgot_label.setOnMouseClicked(_ -> this.forgot_password());
-
-        remember_box.getChildren().addAll(spacer, forgot_label);
 
         HBox warning_box = new HBox();
         warning_box.getStyleClass().add("warning_box");
+        warning_box.setAlignment(Pos.CENTER_LEFT);
+        warning_box.setMaxWidth(Double.MAX_VALUE);
 
         Label warning_label = new Label("Shared company workstation. Your session remains active until you sign out or the terminal locks automatically.");
         warning_label.getStyleClass().add("warning_label");
+        warning_label.setWrapText(true);
+        warning_label.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(warning_label, Priority.ALWAYS);
 
         warning_box.getChildren().addAll(warning_label);
 
-        this.sign_in_button= new Button("Sign in");
-        this.sign_in_button.getStyleClass().add("button");
+        VBox input_warning = new VBox();
+        input_warning.getChildren().addAll(input_box, warning_box);
 
+        this.sign_in_button = new Button("Sign in");
+        this.sign_in_button.getStyleClass().add("button");
         this.sign_in_button.setMaxSize(Double.MAX_VALUE, 40);
         this.sign_in_button.setPadding(new Insets(10));
-
         this.sign_in_button.setOnAction(_ -> this.signin());
 
-        VBox input_rem = new VBox();
-        input_rem.getChildren().addAll(input_box, remember_box);
-
-        form.getChildren().addAll(label_box, input_rem, warning_box, this.sign_in_button);
-        form.setSpacing(20);
+        form.getChildren().addAll(label_box, input_warning, this.sign_in_button);
 
         left_panel.getChildren().addAll(iron_label, desc_label);
         right_panel.getChildren().add(form);
@@ -194,7 +175,7 @@ public class LoginPage extends VBox {
 
             if (delta_time > min_loading) {
                 Platform.runLater(this::reset);
-                this.setPassEntered.accept(true);
+                this.setLoggedIn.accept(true);
                 this.updateScene.run();
                 return;
             }
@@ -207,7 +188,7 @@ public class LoginPage extends VBox {
 
             Platform.runLater(() -> {
                 this.reset();
-                this.setPassEntered.accept(true);
+                this.setLoggedIn.accept(true);
                 this.updateScene.run();
             });
         }).start();
@@ -226,11 +207,6 @@ public class LoginPage extends VBox {
 
         this.email_field.clear();
         this.password_field.clear();
-    }
-
-    private void forgot_password() {
-        ForgotPasswordPage forgotPasswordPage = new  ForgotPasswordPage();
-        this.setScene.accept(forgotPasswordPage);
     }
 
     private void clear_errors() {

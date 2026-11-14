@@ -7,12 +7,9 @@ import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
@@ -166,7 +163,7 @@ public class LoaderScreen extends VBox {
             long start = System.currentTimeMillis();
             for (TaskList.task t : tasks) {
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(2500);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -289,10 +286,6 @@ public class LoaderScreen extends VBox {
 
         void addToStart(String name) {
             this.head = new task(name, this.head);
-        }
-
-        void printList() {
-            this.toList().forEach(t -> System.out.println(t.name));
         }
 
         void reverse() {
