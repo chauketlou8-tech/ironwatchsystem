@@ -25,7 +25,7 @@ public class App extends Application {
 
     private final LoginPage loginPage;
     private final LoaderScreen loaderScreen;
-    private final HomePage homePage;
+    private HomePage homePage;
 
     private User currentUser;
 
@@ -37,7 +37,7 @@ public class App extends Application {
     public App() {
         this.loaderScreen = new LoaderScreen(this::setLoaded, this::setUsers, this::setEmployees, this::updateScene);
         this.loginPage = new LoginPage(this.users, this::setCurrentUser, this::setLoggedIn, this::updateScene);
-        this.homePage = new HomePage(this.employees, this::setLoggedIn, this::setCurrentUser, this::updateScene, this.currentUser);
+        this.homePage = new HomePage(this.employees, this::setLoggedIn, this::setCurrentUser, this::setSearchText, this::updateScene, this.currentUser);
     }
 
     @Override
@@ -66,6 +66,8 @@ public class App extends Application {
         if (this.stage == null) {
             return;
         }
+
+        this.homePage = new HomePage(this.employees, this::setLoggedIn, this::setCurrentUser, this::setSearchText, this::updateScene, this.currentUser);
 
         Parent root = !isLoaded ? this.loaderScreen : (isLoggedIn ? this.homePage : this.loginPage);
         if (this.appScene == null) {
@@ -109,6 +111,10 @@ public class App extends Application {
         if  (employees == null) return;
 
         this.employees.addAll(employees);
+    }
+
+    private void setSearchText(String searchText) {
+
     }
 
     public void stream(BufferedImage image) {

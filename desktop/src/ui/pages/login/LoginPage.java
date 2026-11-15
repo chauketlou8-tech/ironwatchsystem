@@ -9,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.util.Duration;
 import org.mindrot.jbcrypt.BCrypt;
+import ui.components.layout.TopBar;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HexFormat;

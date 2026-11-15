@@ -41,6 +41,7 @@ public class ServerRepository {
                         rs.getString("lastname"),
                         rs.getString("email"),
                         rs.getString("password"),
+                        rs.getString("department"),
                         rs.getString("position"),
                         rs.getString("profile_picture_path"),
                         (Timestamp)  rs.getObject("created_at"),
@@ -81,4 +82,8 @@ public class ServerRepository {
 
         return employees;
     }
+
+//    public static Client getClient() {
+//        return client;
+//    }
 }

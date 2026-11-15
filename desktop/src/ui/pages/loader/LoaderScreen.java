@@ -27,7 +27,7 @@ public class LoaderScreen extends VBox {
 
     private int count = 1;
     private final double width = 940.0;
-    private final int minLoading = 3500;
+    private final int minLoading = 0;
 
     private final Consumer<List<User>> setUsers;
     private final Consumer<Boolean> setLoaded;
@@ -162,11 +162,11 @@ public class LoaderScreen extends VBox {
         new Thread(() -> {
             long start = System.currentTimeMillis();
             for (TaskList.task t : tasks) {
-                try {
-                    Thread.sleep(2500);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+//                try {
+//                    Thread.sleep(2500);
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
 
                 if (t.isCurrent) {
                     String name = t.name;
@@ -197,6 +197,9 @@ public class LoaderScreen extends VBox {
                         case "ready":
                             this.ready(start);
                             break;
+
+                        default:
+                            return;
                     }
 
                     t.done = true;
