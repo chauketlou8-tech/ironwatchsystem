@@ -169,3 +169,16 @@
     -fx-text-fill: #ff8a1f;
     -fx-underline: true;
 }
+
+.shield-box {
+    -fx-background-color: #ffab6666;
+    -fx-border-color: rgba(255, 138, 31, 0.3);
+    -fx-border-width: 1.5;
+    -fx-border-radius: 12;
+    -fx-background-radius: 22;
+    -fx-padding: 22;
+}
+
+.shield-icon {
+    -fx-fill: #ff8a1f;
+}

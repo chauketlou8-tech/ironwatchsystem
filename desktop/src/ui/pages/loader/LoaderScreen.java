@@ -3,6 +3,8 @@ package ui.pages.loader;
 import Models.Employee;
 import Models.User;
 import Repositories.ServerRepository;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcons;
 import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -10,6 +12,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
@@ -67,6 +70,20 @@ public class LoaderScreen extends VBox {
         setAlignment(Pos.CENTER);
         setSpacing(28);
         setPadding(new Insets(40, 300, 40, 300));
+
+        FontAwesomeIcon logo_shield = new FontAwesomeIcon();
+        logo_shield.setIcon(FontAwesomeIcons.SHIELD);
+        logo_shield.setSize("30");
+        logo_shield.getStyleClass().add("shield-icon");
+
+        StackPane shield_box = new StackPane();
+        shield_box.getStyleClass().add("shield-box");
+        shield_box.getChildren().add(logo_shield);
+
+        shield_box.setMaxHeight(60);
+        shield_box.setMinHeight(60);
+        shield_box.setMaxWidth(60);
+        shield_box.setMinWidth(60);
 
         Label iron_label = new Label("IRONWATCH");
         iron_label.getStyleClass().add("brand-title");
@@ -155,7 +172,7 @@ public class LoaderScreen extends VBox {
             }
         }
 
-        getChildren().addAll(labels, progress_container, tasks_box);
+        getChildren().addAll(shield_box, labels, progress_container, tasks_box);
     }
 
     private void updateProgress() throws InterruptedException {

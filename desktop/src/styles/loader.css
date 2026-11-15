@@ -74,3 +74,16 @@
     -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
+
+.shield-box {
+    -fx-background-color: rgba(255, 138, 31, 0.1);
+    -fx-border-color: rgba(255, 138, 31, 0.3);
+    -fx-border-width: 1.5;
+    -fx-border-radius: 12;
+    -fx-background-radius: 22;
+    -fx-padding: 22;
+}
+
+.shield-icon {
+    -fx-fill: #ff8a1f;
+}

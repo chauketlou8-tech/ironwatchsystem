@@ -1,6 +1,8 @@
 package ui.pages.login;
 
 import Models.User;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcons;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -9,7 +11,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.util.Duration;
 import org.mindrot.jbcrypt.BCrypt;
-import ui.components.layout.TopBar;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HexFormat;
@@ -70,6 +71,20 @@ public class LoginPage extends VBox {
         VBox.setVgrow(right_panel, Priority.ALWAYS);
         right_panel.setMaxSize(700, Double.MAX_VALUE);
         right_panel.setPadding(new Insets(80, 150, 80, 150));
+
+        FontAwesomeIcon logo_shield = new FontAwesomeIcon();
+        logo_shield.setIcon(FontAwesomeIcons.SHIELD);
+        logo_shield.setSize("30");
+        logo_shield.getStyleClass().add("shield-icon");
+
+        StackPane shield_box = new StackPane();
+        shield_box.getStyleClass().add("shield-box");
+        shield_box.getChildren().add(logo_shield);
+
+        shield_box.setMaxHeight(60);
+        shield_box.setMinHeight(60);
+        shield_box.setMaxWidth(60);
+        shield_box.setMinWidth(60);
 
         Label iron_label = new Label("I R O N W A T C H");
         iron_label.getStyleClass().add("iron_label");
@@ -144,7 +159,7 @@ public class LoginPage extends VBox {
 
         form.getChildren().addAll(label_box, input_warning, this.sign_in_button);
 
-        left_panel.getChildren().addAll(iron_label, desc_label);
+        left_panel.getChildren().addAll(shield_box, iron_label, desc_label);
         right_panel.getChildren().add(form);
 
         container.getChildren().addAll(left_panel, right_panel);

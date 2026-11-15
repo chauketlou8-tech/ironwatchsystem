@@ -4,6 +4,7 @@ create table if not exists Users(
     lastname text not null,
     email text not null unique,
     password text not null,
+    department text not null default '',
     position text not null,
     profile_picture_path text not null,
     created_at timestamp with time zone default now(),
