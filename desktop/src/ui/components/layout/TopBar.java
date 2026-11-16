@@ -29,24 +29,28 @@ public class TopBar extends HBox {
     private final Consumer<Boolean> setLoggedIn;
     private final Consumer<User> setCurrentUser;
     private final Consumer<String> setSearchText;
+    private final Consumer<String> setCurrDashboard;
+
     private final Runnable updateScene;
 
     int new_notifications = 0;
 
-    public TopBar(User user, Consumer<Boolean> setLoggedIn, Consumer<User> setCurrentUser, Consumer<String> setSearchText, Runnable updateScene) {
+    public TopBar(User user, Consumer<Boolean> setLoggedIn, Consumer<User> setCurrentUser, Consumer<String> setSearchText, Consumer<String> setCurrDashboard, Runnable updateScene) {
         this.user = user;
         this.setLoggedIn = setLoggedIn;
         this.setCurrentUser = setCurrentUser;
         this.setSearchText = setSearchText;
+        this.setCurrDashboard = setCurrDashboard;
         this.updateScene = updateScene;
         this.unitUI();
     }
 
-    public void unitUI() {
+    private void unitUI() {
         getStyleClass().add("top-bar");
 
         HBox left_panel = new HBox(15);
         left_panel.getStyleClass().add("left-panel");
+        left_panel.getStyleClass().add("hover-container");
         left_panel.setAlignment(Pos.CENTER_LEFT);
 
         FontAwesomeIcon shield_icon = new FontAwesomeIcon();
@@ -114,10 +118,10 @@ public class TopBar extends HBox {
         bell_container.setPrefSize(18, 18);
         bell_container.getChildren().addAll(bell_icon, bg);
 
-        AnchorPane.setTopAnchor(bell_icon, 4.0);
+        AnchorPane.setTopAnchor(bell_icon, 10.0);
         AnchorPane.setLeftAnchor(bell_icon, 2.0);
 
-        AnchorPane.setTopAnchor(bg, 2.0);
+        AnchorPane.setTopAnchor(bg, 6.0);
         AnchorPane.setRightAnchor(bg, 0.0);
 
         notifications_box.getChildren().add(bell_container);
@@ -167,6 +171,8 @@ public class TopBar extends HBox {
                     }
             }
 
+            this.setCurrDashboard.accept(this.dashboard);
+
             VBox labels_box = new VBox();
             labels_box.setAlignment(Pos.CENTER_LEFT);
             labels_box.setSpacing(2);
@@ -184,7 +190,6 @@ public class TopBar extends HBox {
 
             HBox left_container = new HBox(10);
             left_container.setAlignment(Pos.CENTER_LEFT);
-            left_container.getStyleClass().add("hover-container");
 
             if (no_switch) {
                 left_container.getChildren().addAll(labels_box);
@@ -333,6 +338,7 @@ public class TopBar extends HBox {
                 this.dashboard = option.name;
                 this.active_popup.hide();
                 this.active_popup = null;
+                this.setCurrDashboard.accept(this.dashboard);
             });
 
             menu.getChildren().add(item);

@@ -2,6 +2,8 @@ import Models.Employee;
 import Models.User;
 import javafx.application.Application;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -34,10 +36,28 @@ public class App extends Application {
 
     private int counter = 0;
 
+    private final StringProperty search_text;
+    private final StringProperty curr_dashboard;
+    private final StringProperty curr_tab;
+
     public App() {
+        this.search_text = new SimpleStringProperty(null);
+        this.curr_dashboard = new SimpleStringProperty(null);
+        this.curr_tab = new SimpleStringProperty(null);
+
         this.loaderScreen = new LoaderScreen(this::setLoaded, this::setUsers, this::setEmployees, this::updateScene);
         this.loginPage = new LoginPage(this.users, this::setCurrentUser, this::setLoggedIn, this::updateScene);
-        this.homePage = new HomePage(this.employees, this::setLoggedIn, this::setCurrentUser, this::setSearchText, this::updateScene, this.currentUser);
+        this.homePage = new HomePage(
+                this.employees,
+                this::setLoggedIn,
+                this::setCurrentUser,
+                this::setSearchText,
+                this::setCurrDashboard,
+                this::setCurrTab,
+                this::updateScene,
+                this.currentUser,
+                this.curr_dashboard
+        );
     }
 
     @Override
@@ -67,7 +87,17 @@ public class App extends Application {
             return;
         }
 
-        this.homePage = new HomePage(this.employees, this::setLoggedIn, this::setCurrentUser, this::setSearchText, this::updateScene, this.currentUser);
+        this.homePage = new HomePage(
+                this.employees,
+                this::setLoggedIn,
+                this::setCurrentUser,
+                this::setSearchText,
+                this::setCurrDashboard,
+                this::setCurrTab,
+                this::updateScene,
+                this.currentUser,
+                this.curr_dashboard
+        );
 
         Parent root = !isLoaded ? this.loaderScreen : (isLoggedIn ? this.homePage : this.loginPage);
         if (this.appScene == null) {
@@ -114,7 +144,18 @@ public class App extends Application {
     }
 
     private void setSearchText(String searchText) {
+        if (searchText == null || searchText.isBlank()) return;
+        this.search_text.set(searchText);
+    }
 
+    private void setCurrDashboard(String currDashboard) {
+        if (currDashboard == null || currDashboard.isBlank()) return;
+        this.curr_dashboard.set(currDashboard);
+    }
+
+    private void setCurrTab(String currTab) {
+        if (currTab == null || currTab.isBlank()) return;
+        this.curr_tab.set(currTab);
     }
 
     public void stream(BufferedImage image) {
